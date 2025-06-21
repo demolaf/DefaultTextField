@@ -16,8 +16,9 @@ public struct TextFieldComponent {
         islabelHidden: Bool = false,
         enabled: Bool = true,
         obscured: Bool = false,
-        maintainsValidationMessages: Bool = true,
+        maintainsValidationMessages: Bool = false,
         showsIconValidationMessage: Bool = false,
+        validateWhenEmpty: Bool = false,
         validations: [FormValidator]
     ) {
         self.title = title
@@ -29,6 +30,7 @@ public struct TextFieldComponent {
         self.obscured = obscured
         self.maintainsValidationMessages = maintainsValidationMessages
         self.showsIconValidationMessage = showsIconValidationMessage
+        self.validateWhenEmpty = validateWhenEmpty
         self.validations = validations
     }
 
@@ -41,5 +43,6 @@ public struct TextFieldComponent {
     var obscured: Bool
     var maintainsValidationMessages: Bool
     var showsIconValidationMessage: Bool
+    var validateWhenEmpty: Bool
     let validations: [FormValidator]
 }
