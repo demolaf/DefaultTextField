@@ -6,11 +6,11 @@ import RxSwift
 import RxRelay
 import RxCocoa
 
-public class DefaultTextField: UIView {
+open class DefaultTextField: UIView {
     private var contentVStack: UIStackView!
     private(set) var label: UILabel!
     public var textField: UITextField!
-    private var obscureButton: UIButton!
+    private var obscureButton: UIButton?
     private var validationsVStack: UIStackView!
     
     public var textFieldComponent: TextFieldComponent
@@ -46,11 +46,13 @@ public class DefaultTextField: UIView {
         setupContentVStack()
         setupLabel()
         setupTextField()
-        setupObscureButton()
+        if textFieldComponent.obscured {
+            setupObscureButton()
+        }
         setupValidationsVStack()
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError()
     }
     
@@ -88,13 +90,16 @@ public class DefaultTextField: UIView {
         textField.spellCheckingType = .no
         textField.autocapitalizationType = .none
         textField.keyboardType = textFieldComponent.keyboardType
+#if !targetEnvironment(simulator)
         textField.textContentType = textFieldComponent.textContentType
+#endif
         textField.defaultTextAttributes = [
             .font: UIFont.systemFont(ofSize: 14)
         ]
         textField.leftViewMode = .always
         textField.rightViewMode = .always
         textField.leftView = UIView(frame: .init(x: 0, y: 0, width: 16, height: 0))
+        textField.rightView = UIView(frame: .init(x: 0, y: 0, width: 16, height: 0))
         textField.layer.borderColor = UIColor.systemGray3.cgColor
         textField.layer.borderWidth = 1
         textField.layer.cornerRadius = 10
@@ -122,7 +127,7 @@ public class DefaultTextField: UIView {
     
     private func setupObscureButton() {
         let button = UIButton(type: .custom)
-        button.tintColor = .label
+        button.tintColor = .systemGray
         button.setImage(UIImage(systemName: "eye"), for: .normal)
         button.addTarget(self, action: #selector(obscureButtonTapped), for: .primaryActionTriggered)
         
@@ -135,7 +140,7 @@ public class DefaultTextField: UIView {
         textField.rightViewMode = .always
         
         obscureButton = button
-        obscureButton.isHidden = !textFieldComponent.obscured
+        // obscureButton.isHidden = !textFieldComponent.obscured
     }
     
     private func setupValidationsVStack() {
@@ -175,17 +180,17 @@ public class DefaultTextField: UIView {
         if input.isEmpty {
             textField.tintColor = .label
             textField.textColor = .label
-            obscureButton.tintColor = .label
+            obscureButton?.tintColor = .systemGray
             textField.layer.borderColor = UIColor.systemGray3.cgColor
         } else if isValid {
             textField.tintColor = .label
             textField.textColor = .label
-            obscureButton.tintColor = .label
+            obscureButton?.tintColor = .systemGray
             textField.layer.borderColor = UIColor.green.cgColor
         } else {
             textField.tintColor = .red
             textField.textColor = .red
-            obscureButton.tintColor = .red
+            obscureButton?.tintColor = .red
             textField.layer.borderColor = UIColor.red.cgColor
         }
     }
@@ -194,20 +199,20 @@ public class DefaultTextField: UIView {
         guard textFieldComponent.validateWhenEmpty || !input.isEmpty else {
             return nil
         }
-
+        
         let isValid = item.validate(input)
-
+        
         // If valid and we're not meant to keep messages for valid cases, return nil
         if isValid && !textFieldComponent.maintainsValidationMessages {
             return nil
         }
-
+        
         // Proceed to build the validation message
         let titleHStack = UIStackView()
         titleHStack.axis = .horizontal
         titleHStack.spacing = 4
         titleHStack.alignment = .center
-
+        
         if textFieldComponent.showsIconValidationMessage {
             let iconName = isValid ? "checkmark.circle.fill" : "info.circle"
             let iconColor = isValid ? UIColor.systemGreen : UIColor.red
@@ -216,7 +221,7 @@ public class DefaultTextField: UIView {
             let iconView = UIImageView(image: iconImage)
             iconView.tintColor = iconColor
             iconView.translatesAutoresizingMaskIntoConstraints = false
-
+            
             NSLayoutConstraint.activate([
                 iconView.widthAnchor.constraint(equalToConstant: 16),
                 iconView.heightAnchor.constraint(equalToConstant: 16),
@@ -232,7 +237,7 @@ public class DefaultTextField: UIView {
         label.textColor = textColor
         
         titleHStack.addArrangedSubview(label)
-
+        
         return titleHStack
     }
     
@@ -248,7 +253,7 @@ public class DefaultTextField: UIView {
     func toggleObscure() {
         textFieldComponent.obscured.toggle()
         debugPrint("Obscured - \(textFieldComponent.obscured)")
-        obscureButton.setImage(!textFieldComponent.obscured ? UIImage(systemName: "eye.slash") : UIImage(systemName: "eye"), for: .normal)
+        obscureButton?.setImage(!textFieldComponent.obscured ? UIImage(systemName: "eye.slash") : UIImage(systemName: "eye"), for: .normal)
         textField.isSecureTextEntry = textFieldComponent.obscured
     }
 }
