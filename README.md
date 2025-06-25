@@ -34,8 +34,7 @@ import DefaultTextField
 import RxSwift
 
 // Define validation rules
-def nonEmptyRule(_ value: String?) -> Bool { !(value ?? "").isEmpty }
-let nonEmptyValidator = FormValidator(message: "Field cannot be empty", validate: nonEmptyRule)
+let notEmpty = FormValidator(message: "Field cannot be empty", validate: { input in !(input?.isEmpty ?? false) })
 
 // Configure the text field component
 let component = TextFieldComponent(
@@ -47,7 +46,7 @@ let component = TextFieldComponent(
     maintainsValidationMessages: false,
     showsIconValidationMessage: true,
     validateWhenEmpty: false,
-    validations: [nonEmptyValidator]
+    validations: [notEmpty]
 )
 
 // Create the DefaultTextField
@@ -117,4 +116,4 @@ flowchart TD
 
 ## License
 
-Specify your license here. 
+MIT
