@@ -18,7 +18,7 @@ A customizable, RxSwift-powered text field component for iOS, supporting validat
 Add to your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/yourusername/DefaultTextField.git", exact: "1.0.0")
+.package(url: "https://github.com/demolaf/DefaultTextField.git", exact: "1.0.0")
 ```
 
 And add `DefaultTextField` as a dependency for your target.
